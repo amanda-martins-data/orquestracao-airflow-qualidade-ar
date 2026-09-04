@@ -1,0 +1,16 @@
+# dados e warehouse (gerados em runtime, não versionados)
+include/data/
+include/dbt_project/target/
+include/dbt_project/dbt_packages/
+include/dbt_project/logs/
+include/dbt_project/profiles.yml
+include/dbt_project/.user.yml
+
+# airflow local
+.airflow_home/
+logs/
+*.pyc
+__pycache__/
+
+# python
+.venv/
