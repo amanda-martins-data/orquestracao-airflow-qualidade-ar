@@ -1,0 +1,10 @@
+# Copie este arquivo para ~/.dbt/profiles.yml (ou defina DBT_PROFILES_DIR
+# apontando para esta pasta) antes de rodar `dbt run`.
+
+pipeline_qualidade_ar:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../data/warehouse.duckdb"
+      threads: 4
