@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: air_quality_measurements
+        description: >
+          Medições brutas de qualidade do ar carregadas a partir da API
+          da OpenAQ (ou do fixture sintético), sem nenhuma transformação.
+        loaded_at_field: extracted_at
+        columns:
+          - name: parameter
+            description: "Poluente medido (pm25, pm10, o3, no2, co)."
+          - name: value
+            description: "Valor bruto da medição, na unidade original."
+          - name: measured_at_utc
+            description: "Timestamp da medição em UTC (ISO 8601)."
