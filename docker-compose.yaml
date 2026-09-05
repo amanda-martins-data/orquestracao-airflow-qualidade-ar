@@ -1,0 +1,70 @@
+# docker-compose para rodar o Airflow localmente com LocalExecutor.
+# Versão enxuta do compose oficial do Airflow (sem Celery/Redis, que não
+# se justificam para uma única DAG rodando em ambiente de portfólio/dev).
+#
+# Uso:
+#   docker compose up airflow-init   # cria o usuário admin e migra o banco
+#   docker compose up                # sobe webserver + scheduler
+#   Acesse http://localhost:8080 (usuário/senha: airflow / airflow)
+
+x-airflow-common: &airflow-common
+  build: .
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW_VAR_AIR_QUALITY_USE_SYNTHETIC: "true"
+    AIRFLOW_VAR_AIR_QUALITY_CITIES: "São Paulo,Rio de Janeiro,Belo Horizonte"
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./include:/opt/airflow/include
+    - airflow-logs:/opt/airflow/logs
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate
+        airflow users create \
+          --username airflow --password airflow \
+          --firstname Amanda --lastname Martins \
+          --role Admin --email amanda_mdantas@outlook.com
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+
+volumes:
+  postgres-db:
+  airflow-logs:
