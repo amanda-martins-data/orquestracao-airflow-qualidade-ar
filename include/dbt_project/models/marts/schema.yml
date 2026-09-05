@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: stg_air_quality
+    description: "Medições de qualidade do ar limpas, tipadas e deduplicadas."
+    columns:
+      - name: location_id
+        tests: [not_null]
+      - name: parameter
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["pm25", "pm10", "o3", "no2", "co"]
+      - name: value
+        tests: [not_null]
+      - name: measured_at_utc
+        tests: [not_null]
+
+  - name: air_quality_daily
+    description: "Agregação diária de qualidade do ar por cidade e poluente."
+    columns:
+      - name: city
+        tests: [not_null]
+      - name: parameter
+        tests: [not_null]
+      - name: avg_value
+        tests: [not_null]
+      - name: reading_count
+        tests:
+          - not_null
