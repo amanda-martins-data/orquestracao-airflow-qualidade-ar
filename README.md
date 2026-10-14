@@ -1,5 +1,7 @@
 # Orquestração do Pipeline de Qualidade do Ar com Airflow
 
+[![CI](https://github.com/amanda-martins-data/orquestracao-airflow-qualidade-ar/actions/workflows/ci.yml/badge.svg)](https://github.com/amanda-martins-data/orquestracao-airflow-qualidade-ar/actions/workflows/ci.yml)
+
 Coloca o pipeline construído no
 [Projeto 01](https://github.com/amanda-martins-data/pipeline-qualidade-ar)
 (extract → load → dbt build) sob orquestração de produção com Apache
